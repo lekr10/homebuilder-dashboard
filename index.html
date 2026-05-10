@@ -1,0 +1,1344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Homebuilder Entry Scorecard</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏠</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,300;0,14..32,400;0,14..32,500;0,14..32,600;0,14..32,700;0,14..32,800;1,14..32,400&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:         #080d18;
+      --surface:    #0d1525;
+      --surface-2:  #121d30;
+      --surface-3:  #182540;
+      --border:     #1c2e4a;
+      --border-2:   #243856;
+      --border-3:   #2e4870;
+
+      --text-1: #dce8f8;
+      --text-2: #7898c0;
+      --text-3: #445e80;
+      --text-4: #2a3d58;
+
+      --blue:      #4a9eff;
+      --blue-dim:  rgba(74,158,255,0.08);
+      --blue-ring: rgba(74,158,255,0.18);
+
+      --amber:        #c8960a;
+      --amber-bright: #e0aa10;
+      --amber-dim:    rgba(200,150,10,0.08);
+      --amber-ring:   rgba(200,150,10,0.22);
+
+      --green:        #18b054;
+      --green-bright: #1ecc62;
+      --green-dim:    rgba(24,176,84,0.08);
+      --green-ring:   rgba(24,176,84,0.2);
+
+      --lime:        #82c040;
+      --lime-dim:    rgba(130,192,64,0.08);
+      --lime-ring:   rgba(130,192,64,0.2);
+
+      --red:        #d44040;
+      --red-dim:    rgba(212,64,64,0.07);
+      --red-ring:   rgba(212,64,64,0.2);
+
+      --radius:    8px;
+      --radius-sm: 5px;
+      --radius-xs: 3px;
+    }
+
+    html { font-size: 14px; }
+
+    body {
+      background: var(--bg);
+      color: var(--text-1);
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      min-height: 100vh;
+      line-height: 1.5;
+    }
+
+    /* ── Layout ─────────────────────────────────────────── */
+    .app {
+      max-width: 1060px;
+      margin: 0 auto;
+      padding: 0 28px;
+    }
+
+    /* ── Header ─────────────────────────────────────────── */
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 0 16px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .brand-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-1);
+      letter-spacing: -0.01em;
+    }
+
+    .brand-dot {
+      width: 3px;
+      height: 3px;
+      border-radius: 50%;
+      background: var(--text-4);
+    }
+
+    .brand-sub {
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--text-3);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .updated-label {
+      font-size: 11px;
+      color: var(--text-3);
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* ── Buttons ─────────────────────────────────────────── */
+    .btn {
+      font-family: inherit;
+      cursor: pointer;
+      border: none;
+      border-radius: var(--radius-sm);
+      transition: background 0.15s, border-color 0.15s, color 0.15s, opacity 0.15s;
+    }
+
+    .btn-ghost {
+      background: var(--surface-3);
+      border: 1px solid var(--border-2);
+      color: var(--text-2);
+      font-size: 11px;
+      font-weight: 500;
+      padding: 6px 13px;
+      letter-spacing: 0.02em;
+    }
+
+    .btn-ghost:hover { border-color: var(--border-3); color: var(--text-1); }
+    .btn-ghost:disabled { opacity: 0.45; cursor: not-allowed; }
+
+    .btn-save {
+      background: var(--surface-3);
+      border: 1px solid var(--blue-ring);
+      color: var(--blue);
+      font-size: 11px;
+      font-weight: 600;
+      padding: 6px 14px;
+      letter-spacing: 0.03em;
+    }
+
+    .btn-save:hover { background: var(--blue-dim); }
+
+    .btn-cancel {
+      background: none;
+      border: 1px solid var(--border);
+      color: var(--text-3);
+      font-size: 11px;
+      padding: 6px 12px;
+    }
+
+    .btn-cancel:hover { color: var(--text-2); }
+
+    /* ── Tabs ────────────────────────────────────────────── */
+    .tab-nav {
+      display: flex;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .tab-btn {
+      font-family: inherit;
+      background: none;
+      border: none;
+      border-bottom: 2px solid transparent;
+      color: var(--text-3);
+      font-size: 12px;
+      font-weight: 500;
+      padding: 11px 16px;
+      margin-bottom: -1px;
+      cursor: pointer;
+      letter-spacing: 0.01em;
+      transition: color 0.15s, border-color 0.15s;
+    }
+
+    .tab-btn:hover { color: var(--text-2); }
+
+    .tab-btn.active {
+      color: var(--text-1);
+      border-bottom-color: var(--blue);
+    }
+
+    /* ── Main ────────────────────────────────────────────── */
+    main { padding: 36px 0 72px; }
+
+    /* ── Hero ────────────────────────────────────────────── */
+    .hero {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 36px 0 44px;
+      gap: 28px;
+    }
+
+    .score-display {
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+    }
+
+    .score-num {
+      font-size: 96px;
+      font-weight: 800;
+      line-height: 1;
+      color: var(--text-1);
+      font-variant-numeric: tabular-nums;
+      letter-spacing: -0.045em;
+    }
+
+    .score-denom {
+      font-size: 26px;
+      font-weight: 400;
+      color: var(--text-4);
+      letter-spacing: -0.02em;
+      padding-bottom: 8px;
+    }
+
+    /* ── Progress bar ───────────────────────────────────── */
+    .progress-wrap {
+      width: 100%;
+      max-width: 580px;
+    }
+
+    .progress-track {
+      position: relative;
+      height: 5px;
+      background: var(--surface-3);
+      border-radius: 3px;
+    }
+
+    .progress-fill {
+      position: absolute;
+      inset: 0;
+      right: auto;
+      width: 0;
+      border-radius: 3px;
+      transition: width 0.7s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.4s;
+    }
+
+    .tick {
+      position: absolute;
+      top: -5px;
+      width: 1px;
+      height: 15px;
+      background: var(--border-2);
+      transform: translateX(-50%);
+    }
+
+    .tick-label {
+      position: absolute;
+      top: 16px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 9px;
+      font-weight: 600;
+      color: var(--text-4);
+      letter-spacing: 0.08em;
+      white-space: nowrap;
+    }
+
+    .progress-bookends {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 28px;
+    }
+
+    .bookend {
+      font-size: 10px;
+      color: var(--text-4);
+      letter-spacing: 0.04em;
+    }
+
+    /* ── Action banner ──────────────────────────────────── */
+    .action-banner {
+      width: 100%;
+      max-width: 580px;
+      border-left: 3px solid var(--red);
+      background: var(--red-dim);
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      padding: 14px 18px;
+    }
+
+    .action-top {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 5px;
+    }
+
+    .action-name {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--red);
+    }
+
+    .action-names-pill {
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--text-3);
+      background: var(--surface-3);
+      border: 1px solid var(--border-2);
+      border-radius: 20px;
+      padding: 2px 8px;
+      letter-spacing: 0.03em;
+    }
+
+    .action-desc {
+      font-size: 12px;
+      color: var(--text-2);
+      line-height: 1.55;
+    }
+
+    /* ── Section headers ─────────────────────────────────── */
+    .section-hd {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+
+    .section-label {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.11em;
+      text-transform: uppercase;
+      color: var(--text-3);
+    }
+
+    .section-sub {
+      font-size: 11px;
+      color: var(--text-4);
+    }
+
+    /* ── Signal grid ─────────────────────────────────────── */
+    .signals-wrap { margin-top: 44px; }
+
+    .signals-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+
+    @media (max-width: 600px) {
+      .signals-grid { grid-template-columns: 1fr; }
+      .score-num { font-size: 72px; }
+    }
+
+    /* ── Signal card ─────────────────────────────────────── */
+    .sig-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      transition: border-color 0.25s;
+    }
+
+    .sig-card.s1 { border-color: var(--amber-ring); }
+    .sig-card.s2 { border-color: var(--green-ring); }
+
+    .card-body { padding: 16px 18px 14px; }
+
+    /* Card top row */
+    .card-hd {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 13px;
+    }
+
+    .card-label {
+      font-size: 9.5px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-3);
+    }
+
+    /* Score badge */
+    .score-badge {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .segs {
+      display: flex;
+      gap: 3px;
+    }
+
+    .seg {
+      width: 18px;
+      height: 3px;
+      border-radius: 2px;
+      background: var(--surface-3);
+      transition: background 0.3s;
+    }
+
+    .s1 .seg:first-child  { background: var(--amber); }
+    .s2 .seg              { background: var(--green); }
+
+    .badge-pts {
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--text-4);
+      font-variant-numeric: tabular-nums;
+      letter-spacing: 0.04em;
+    }
+
+    .s1 .badge-pts { color: var(--amber); }
+    .s2 .badge-pts { color: var(--green); }
+
+    /* Value */
+    .card-val {
+      display: flex;
+      align-items: baseline;
+      gap: 4px;
+      margin-bottom: 3px;
+    }
+
+    .val-num {
+      font-size: 28px;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+      letter-spacing: -0.025em;
+      color: var(--text-1);
+      line-height: 1.1;
+    }
+
+    .val-unit {
+      font-size: 13px;
+      color: var(--text-3);
+      font-weight: 400;
+    }
+
+    /* Direction */
+    .card-dir {
+      font-size: 11px;
+      color: var(--text-3);
+      margin-bottom: 11px;
+      min-height: 15px;
+    }
+
+    .dir-good { color: var(--green); }
+    .dir-bad  { color: var(--red); }
+
+    /* Next threshold */
+    .card-next {
+      font-size: 11px;
+      color: var(--text-3);
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xs);
+      padding: 7px 10px;
+      margin-bottom: 13px;
+      line-height: 1.45;
+    }
+
+    .card-next.maxed {
+      color: var(--green);
+      background: var(--green-dim);
+      border-color: var(--green-ring);
+    }
+
+    /* Card footer */
+    .card-ft {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      padding-top: 11px;
+      border-top: 1px solid var(--border);
+    }
+
+    .tag {
+      font-size: 9px;
+      font-weight: 600;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      padding: 2px 6px;
+      border-radius: var(--radius-xs);
+    }
+
+    .tag-auto   { background: var(--blue-dim); color: var(--blue); border: 1px solid var(--blue-ring); }
+    .tag-manual { background: var(--surface-3); color: var(--text-3); border: 1px solid var(--border-2); }
+
+    .card-meta { font-size: 10px; color: var(--text-4); }
+
+    .update-btn {
+      margin-left: auto;
+      font-family: inherit;
+      font-size: 10px;
+      font-weight: 500;
+      color: var(--text-3);
+      background: none;
+      border: 1px solid var(--border-2);
+      border-radius: var(--radius-xs);
+      padding: 3px 9px;
+      cursor: pointer;
+      letter-spacing: 0.03em;
+      transition: color 0.15s, border-color 0.15s;
+    }
+
+    .update-btn:hover { color: var(--text-1); border-color: var(--border-3); }
+    .update-btn.open  { color: var(--text-2); border-color: var(--border-3); }
+
+    /* ── Manual form ─────────────────────────────────────── */
+    .update-form {
+      display: none;
+      padding: 13px 18px 15px;
+      border-top: 1px solid var(--border);
+      background: var(--surface-2);
+    }
+
+    .form-field { margin-bottom: 11px; }
+
+    .form-lbl {
+      display: block;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-3);
+      margin-bottom: 5px;
+    }
+
+    .form-input {
+      width: 100%;
+      background: var(--surface);
+      border: 1px solid var(--border-2);
+      border-radius: var(--radius-xs);
+      color: var(--text-1);
+      font-family: inherit;
+      font-size: 13px;
+      font-variant-numeric: tabular-nums;
+      padding: 7px 10px;
+      transition: border-color 0.15s;
+      -moz-appearance: textfield;
+    }
+
+    .form-input::-webkit-inner-spin-button,
+    .form-input::-webkit-outer-spin-button { -webkit-appearance: none; }
+
+    .form-input:focus { outline: none; border-color: var(--blue); }
+
+    .check-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+    }
+
+    .check-row input[type=checkbox] {
+      accent-color: var(--blue);
+      width: 13px;
+      height: 13px;
+      flex-shrink: 0;
+    }
+
+    .check-lbl { font-size: 12px; color: var(--text-2); }
+
+    .form-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 13px;
+    }
+
+    /* ── Tripwires ───────────────────────────────────────── */
+    .tripwires-wrap { margin-top: 44px; }
+
+    .section-toggle {
+      font-family: inherit;
+      background: none;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      width: 100%;
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .toggle-chevron {
+      font-size: 11px;
+      color: var(--text-3);
+      transition: transform 0.2s;
+      display: inline-block;
+    }
+
+    .toggle-chevron.closed { transform: rotate(-90deg); }
+
+    .tw-body { padding-top: 4px; }
+    .tw-body.hidden { display: none; }
+
+    .tw-row {
+      display: grid;
+      grid-template-columns: 10px 1fr auto;
+      gap: 12px;
+      align-items: start;
+      padding: 11px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .tw-row:last-child { border-bottom: none; }
+
+    .tw-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      margin-top: 4px;
+      border: 1px solid var(--border-2);
+      background: var(--surface-3);
+      flex-shrink: 0;
+    }
+
+    .tw-dot.firing  { background: var(--red);   border-color: var(--red); }
+    .tw-dot.clear   { background: var(--green);  border-color: var(--green); }
+    .tw-dot.warning { background: var(--amber);  border-color: var(--amber); }
+
+    .tw-main-text {
+      font-size: 12px;
+      color: var(--text-2);
+      margin-bottom: 3px;
+    }
+
+    .tw-status {
+      font-size: 11px;
+      color: var(--text-4);
+    }
+
+    .tw-status.firing  { color: var(--red); }
+    .tw-status.clear   { color: var(--green); }
+
+    .tw-action {
+      font-size: 10px;
+      color: var(--text-4);
+      text-align: right;
+      max-width: 200px;
+      line-height: 1.4;
+      padding-top: 3px;
+    }
+
+    /* ── History ─────────────────────────────────────────── */
+    .history-wrap { padding-top: 8px; }
+
+    .history-empty {
+      padding: 64px 0;
+      text-align: center;
+      color: var(--text-3);
+      font-size: 13px;
+      line-height: 1.7;
+    }
+
+    .hist-entry {
+      padding: 20px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .hist-entry:last-child { border-bottom: none; }
+
+    .hist-hd {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 12px;
+    }
+
+    .hist-date { font-size: 12px; color: var(--text-3); }
+
+    .hist-delta {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .hist-score {
+      font-size: 12px;
+      font-weight: 600;
+      font-variant-numeric: tabular-nums;
+      color: var(--text-2);
+    }
+
+    .hist-arrow { font-size: 10px; color: var(--text-4); }
+
+    .hist-change {
+      font-size: 11px;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .pos { color: var(--green); }
+    .neg { color: var(--red); }
+
+    .hist-rows { display: flex; flex-direction: column; gap: 5px; }
+
+    .hist-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 7px 11px;
+      background: var(--surface-2);
+      border-radius: var(--radius-xs);
+      font-size: 11px;
+    }
+
+    .hist-sig { color: var(--text-3); font-weight: 500; min-width: 170px; }
+    .hist-pts { color: var(--text-4); font-variant-numeric: tabular-nums; }
+    .hist-pts .new { font-weight: 600; }
+
+    /* ── Toast ───────────────────────────────────────────── */
+    .toast {
+      position: fixed;
+      bottom: 22px;
+      right: 22px;
+      background: var(--surface-2);
+      border: 1px solid var(--border-2);
+      border-radius: var(--radius-sm);
+      padding: 9px 15px;
+      font-size: 12px;
+      color: var(--text-2);
+      box-shadow: 0 6px 28px rgba(0,0,0,0.45);
+      z-index: 100;
+      opacity: 1;
+      transition: opacity 0.3s;
+    }
+
+    .toast.gone { opacity: 0; pointer-events: none; }
+
+    /* ── Spinner ─────────────────────────────────────────── */
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .spin {
+      display: inline-block;
+      width: 9px;
+      height: 9px;
+      border: 1.5px solid var(--border-2);
+      border-top-color: var(--text-2);
+      border-radius: 50%;
+      animation: spin 0.75s linear infinite;
+      vertical-align: middle;
+      margin-right: 5px;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(5px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .fade-in { animation: fadeUp 0.28s ease-out both; }
+  </style>
+</head>
+<body>
+<div class="app">
+
+  <header class="header">
+    <div class="brand">
+      <span class="brand-name">Homebuilder Entry</span>
+      <div class="brand-dot"></div>
+      <span class="brand-sub">Macro Scorecard</span>
+    </div>
+    <div class="header-right">
+      <span class="updated-label" id="el-updated"></span>
+      <button class="btn btn-ghost" id="btn-refresh">Refresh Data</button>
+    </div>
+  </header>
+
+  <nav class="tab-nav">
+    <button class="tab-btn active" data-tab="scorecard">Scorecard</button>
+    <button class="tab-btn" data-tab="history">History</button>
+  </nav>
+
+  <main>
+
+    <!-- ── Scorecard ── -->
+    <div id="view-scorecard">
+
+      <section class="hero">
+        <div class="score-display">
+          <span class="score-num" id="el-score">—</span>
+          <span class="score-denom">/14</span>
+        </div>
+
+        <div class="progress-wrap">
+          <div class="progress-track" id="el-track">
+            <div class="progress-fill" id="el-fill"></div>
+            <div class="tick" style="left:50%">   <span class="tick-label">T1 · 7</span></div>
+            <div class="tick" style="left:71.43%"><span class="tick-label">T2 · 10</span></div>
+            <div class="tick" style="left:85.71%"><span class="tick-label">T3 · 12</span></div>
+          </div>
+          <div class="progress-bookends">
+            <span class="bookend">0</span>
+            <span class="bookend">14</span>
+          </div>
+        </div>
+
+        <div class="action-banner" id="el-banner">
+          <div class="action-top">
+            <span class="action-name" id="el-action-name">Loading</span>
+            <span class="action-names-pill" id="el-action-names" style="display:none"></span>
+          </div>
+          <div class="action-desc" id="el-action-desc"></div>
+        </div>
+      </section>
+
+      <div class="signals-wrap">
+        <div class="section-hd">
+          <span class="section-label">Signal Scorecard</span>
+          <span class="section-sub">7 signals · max 14 pts</span>
+        </div>
+        <div class="signals-grid" id="el-signals"></div>
+      </div>
+
+      <div class="tripwires-wrap">
+        <button class="section-toggle" id="btn-tw">
+          <span class="section-label">Bear-Case Tripwires</span>
+          <span class="toggle-chevron" id="el-chevron">▾</span>
+        </button>
+        <div class="tw-body" id="el-tw-body"></div>
+      </div>
+
+    </div>
+
+    <!-- ── History ── -->
+    <div id="view-history" style="display:none">
+      <div class="history-wrap" id="el-history"></div>
+    </div>
+
+  </main>
+</div>
+
+<div class="toast gone" id="el-toast"></div>
+
+<script>
+// ─── Token ────────────────────────────────────────────────────────────────────
+let TOKEN = localStorage.getItem('hb_token');
+if (!TOKEN) {
+  TOKEN = prompt('Refresh token:');
+  if (TOKEN) localStorage.setItem('hb_token', TOKEN);
+}
+
+// ─── Signal definitions ───────────────────────────────────────────────────────
+const SIGS = {
+  mortgage:      { label: '30yr Mortgage Rate',    unit: '%',    prefix: '',  cadence: 'Weekly · Thu',  auto: true  },
+  fedDirection:  { label: 'Fed Direction',          unit: '',    prefix: '',  cadence: 'Per FOMC',      auto: false },
+  mba:           { label: 'MBA Purchase Index',     unit: '',    prefix: '',  cadence: 'Weekly · Wed',  auto: true  },
+  nahb:          { label: 'NAHB Buyer Traffic',     unit: '',    prefix: '',  cadence: 'Monthly',       auto: true  },
+  cancellations: { label: 'Avg Cancellation Rate',  unit: '%',   prefix: '',  cadence: 'Quarterly',     auto: false },
+  itbPB:         { label: 'ITB P/B Ratio',          unit: 'x',   prefix: '',  cadence: 'Weekly',        auto: true  },
+  osb:           { label: 'OSB Pricing',            unit: '/MSF',prefix: '$', cadence: 'Quarterly',     auto: false },
+};
+
+const ORDER = ['mortgage','fedDirection','mba','nahb','cancellations','itbPB','osb'];
+
+const NEXT = {
+  mortgage:      { 1: 'Rate 6.0–6.74% and falling', 2: 'Rate sustained below 6.0%' },
+  fedDirection:  { 1: '1–2 cuts priced in next 12 months', 2: 'First cut delivered or 3+ cuts priced' },
+  mba:           { 1: 'Index ≥ 145', 2: 'Index ≥ 200' },
+  nahb:          { 1: 'Traffic ≥ 20 and rising month-over-month', 2: 'Traffic ≥ 35' },
+  cancellations: { 1: '13–18% and declining', 2: '≤ 12% and declining' },
+  itbPB:         { 1: 'P/B ≤ 1.5×', 2: 'P/B ≤ 1.0×' },
+  osb:           { 1: '$300–400/MSF and flattening', 2: 'Above $400/MSF or +20% from trough' },
+};
+
+const ACTION_STYLE = {
+  0: { color: 'var(--red)',   bg: 'var(--red-dim)',   border: 'var(--red)',   desc: 'Score below 7 threshold. Leading signals have not confirmed a cycle turn.' },
+  1: { color: 'var(--amber)', bg: 'var(--amber-dim)', border: 'var(--amber)', desc: 'Entry window for Tranche 1. Deploy 40% into highest-conviction names.' },
+  2: { color: 'var(--lime)',  bg: 'var(--lime-dim)',  border: 'var(--lime)',  desc: 'Tranche 2 window — recovery broadening. Add DHI + LEN if Q2 earnings confirm.' },
+  3: { color: 'var(--green)', bg: 'var(--green-dim)', border: 'var(--green)', desc: 'Recovery broadly confirmed. Deploy final 20%. Still ahead of EPS trough.' },
+};
+
+const SIG_LABELS = {
+  mortgage: '30yr Mortgage Rate', fedDirection: 'Fed Direction',
+  mba: 'MBA Purchase Index', nahb: 'NAHB Buyer Traffic',
+  cancellations: 'Avg Cancellation Rate', itbPB: 'ITB P/B Ratio', osb: 'OSB Pricing',
+};
+
+// ─── State ────────────────────────────────────────────────────────────────────
+let snap = null;
+let hist = [];
+let twOpen = true;
+
+// ─── Init ─────────────────────────────────────────────────────────────────────
+(async () => {
+  await load();
+  document.querySelectorAll('.tab-btn').forEach(b => b.addEventListener('click', () => switchTab(b.dataset.tab)));
+  document.getElementById('btn-refresh').addEventListener('click', onRefresh);
+  document.getElementById('btn-tw').addEventListener('click', toggleTW);
+})();
+
+// ─── Load / render ────────────────────────────────────────────────────────────
+async function load() {
+  try {
+    const r = await fetch('/.netlify/functions/get-data', { headers: { 'Cache-Control': 'no-store' } });
+    const j = await r.json();
+    snap = j.snapshot;
+    hist = j.history || [];
+    render();
+  } catch (e) {
+    toast('Failed to load data');
+  }
+}
+
+function render() {
+  renderHero();
+  renderSignals();
+  renderTripwires();
+  renderHistory();
+  if (snap?.lastUpdated) {
+    const d = new Date(snap.lastUpdated);
+    document.getElementById('el-updated').textContent =
+      'Updated ' + d.toLocaleString('en-US', { month:'short', day:'numeric', hour:'numeric', minute:'2-digit' });
+  }
+}
+
+// ─── Hero ─────────────────────────────────────────────────────────────────────
+function renderHero() {
+  const score   = snap?.totalScore ?? 0;
+  const tranche = snap?.tranche    ?? 0;
+  const action  = snap?.action     ?? '—';
+  const names   = snap?.names;
+  const cfg     = ACTION_STYLE[tranche];
+
+  document.getElementById('el-score').textContent = snap ? score : '—';
+
+  // Progress fill
+  const pct = snap ? (score / 14) * 100 : 0;
+  const fillColors = { 0: 'var(--text-4)', 1: 'var(--amber)', 2: 'var(--lime)', 3: 'var(--green)' };
+  const fill = document.getElementById('el-fill');
+  fill.style.width = pct + '%';
+  fill.style.background = fillColors[tranche];
+
+  // Banner
+  const banner = document.getElementById('el-banner');
+  banner.style.borderLeftColor = cfg.border;
+  banner.style.background      = cfg.bg;
+
+  const nameEl = document.getElementById('el-action-name');
+  nameEl.textContent = action.toUpperCase();
+  nameEl.style.color = cfg.color;
+
+  const pillEl = document.getElementById('el-action-names');
+  if (names) { pillEl.textContent = names; pillEl.style.display = ''; }
+  else        { pillEl.style.display = 'none'; }
+
+  const nextScore = [7, 10, 12, 14][tranche];
+  const need = Math.max(0, nextScore - score);
+  const trancheNames = ['Tranche 1', 'Tranche 2', 'Tranche 3'];
+  let desc = snap ? cfg.desc : 'Loading signal data...';
+  if (snap && tranche < 3 && need > 0) desc += ` Need +${need} pt${need !== 1 ? 's' : ''} for ${trancheNames[tranche]}.`;
+  document.getElementById('el-action-desc').textContent = desc;
+}
+
+// ─── Signals ──────────────────────────────────────────────────────────────────
+function renderSignals() {
+  const grid = document.getElementById('el-signals');
+  grid.innerHTML = '';
+  ORDER.forEach(key => {
+    const d    = snap?.data?.[key];
+    const meta = SIGS[key];
+    const sc   = d?.score ?? 0;
+    const val  = fmtVal(key, d);
+    const dir  = fmtDir(key, d);
+    const next = nextTxt(key, d);
+    const upd  = d?.lastUpdated ? new Date(d.lastUpdated).toLocaleDateString('en-US',{month:'short',day:'numeric'}) : '—';
+    const dirCls = dirClass(key, d);
+
+    const card = document.createElement('div');
+    card.className = `sig-card s${sc} fade-in`;
+    card.dataset.k = key;
+
+    card.innerHTML = `
+      <div class="card-body">
+        <div class="card-hd">
+          <span class="card-label">${meta.label}</span>
+          <div class="score-badge">
+            <div class="segs"><div class="seg"></div><div class="seg"></div></div>
+            <span class="badge-pts">${sc}/2</span>
+          </div>
+        </div>
+        <div class="card-val">
+          <span class="val-num">${meta.prefix}${val}</span>
+          ${meta.unit ? `<span class="val-unit">${meta.unit}</span>` : ''}
+        </div>
+        <div class="card-dir ${dirCls}">${dir}&nbsp;</div>
+        <div class="card-next ${sc === 2 ? 'maxed' : ''}">${next}</div>
+        <div class="card-ft">
+          <span class="tag ${meta.auto ? 'tag-auto' : 'tag-manual'}">${meta.auto ? 'Auto' : 'Manual'}</span>
+          <span class="card-meta">${meta.cadence}</span>
+          <span class="card-meta">· ${upd}</span>
+          ${!meta.auto ? `<button class="update-btn" id="ubtn-${key}" onclick="toggleForm('${key}')">Update</button>` : ''}
+        </div>
+      </div>
+      ${!meta.auto ? manualForm(key, d) : ''}
+    `;
+
+    grid.appendChild(card);
+  });
+}
+
+function fmtVal(key, d) {
+  if (!d) return '—';
+  if (key === 'fedDirection') {
+    if (d.cuts == null) return '—';
+    return d.cuts + (d.cuts === 1 ? ' cut' : ' cuts') + ' priced';
+  }
+  if (d.raw == null) return '—';
+  if (key === 'mortgage')      return d.raw.toFixed(2);
+  if (key === 'mba')           return d.raw.toFixed(1);
+  if (key === 'nahb')          return Math.round(d.raw).toString();
+  if (key === 'itbPB')         return d.raw.toFixed(2);
+  if (key === 'cancellations') return d.raw.toFixed(1);
+  if (key === 'osb')           return Math.round(d.raw).toString();
+  return d.raw;
+}
+
+function fmtDir(key, d) {
+  if (!d) return '';
+  if (key === 'fedDirection')
+    return d.firstCutDelivered ? '✓ First cut delivered' : 'First cut not yet delivered';
+  if (key === 'cancellations')
+    return d.raw == null ? '' : (d.declining ? '↓ Declining vs prior quarter' : '↑ Not declining — watch closely');
+  if (key === 'osb') {
+    if (d.raw == null) return '';
+    if (d.prevRaw == null) return '';
+    const diff = d.raw - d.prevRaw;
+    const p = ((Math.abs(diff) / d.prevRaw) * 100).toFixed(0);
+    return diff === 0 ? 'Unchanged from prior reading' : `${diff > 0 ? '↑' : '↓'} ${p}% from prior reading`;
+  }
+  if (d.raw == null || d.prevRaw == null) return '';
+  const diff = d.raw - d.prevRaw;
+  if (diff === 0) return 'Unchanged';
+  const abs = Math.abs(diff);
+  let ds = '';
+  if (key === 'mortgage')  ds = abs.toFixed(2) + '%';
+  else if (key === 'mba')  ds = abs.toFixed(1) + ' pts';
+  else if (key === 'nahb') ds = Math.round(abs) + ' pts';
+  else if (key === 'itbPB') ds = abs.toFixed(2) + '×';
+  else ds = abs.toString();
+  return `${diff > 0 ? '↑' : '↓'} ${ds} from prior reading`;
+}
+
+function dirClass(key, d) {
+  if (!d || key === 'fedDirection' || key === 'cancellations') return '';
+  const diff = (d.raw ?? 0) - (d.prevRaw ?? 0);
+  if (diff === 0) return '';
+  const upBad = { mortgage: true, itbPB: true };
+  return upBad[key] ? (diff > 0 ? 'dir-bad' : 'dir-good') : (diff > 0 ? 'dir-good' : 'dir-bad');
+}
+
+function nextTxt(key, d) {
+  const sc = d?.score ?? 0;
+  if (sc === 2) return 'Maximum score achieved';
+  const nxt = sc + 1;
+  return `Score ${nxt} — ${NEXT[key]?.[nxt] || ''}`;
+}
+
+// ─── Manual forms ──────────────────────────────────────────────────────────────
+function manualForm(key, d) {
+  if (key === 'fedDirection') {
+    const cuts = d?.cuts ?? 0;
+    const del  = d?.firstCutDelivered ?? false;
+    return `
+      <div class="update-form" id="form-${key}">
+        <div class="form-field">
+          <label class="form-lbl">Implied cuts in next 12 months</label>
+          <input type="number" class="form-input" id="inp-cuts" min="0" max="10" step="1" value="${cuts}">
+        </div>
+        <div class="form-field">
+          <label class="check-row">
+            <input type="checkbox" id="inp-delivered" ${del ? 'checked' : ''}>
+            <span class="check-lbl">First cut has been delivered</span>
+          </label>
+        </div>
+        <div class="form-actions">
+          <button class="btn btn-save" onclick="saveManual('${key}')">Save</button>
+          <button class="btn btn-cancel" onclick="toggleForm('${key}')">Cancel</button>
+        </div>
+      </div>`;
+  }
+  if (key === 'cancellations') {
+    const raw = d?.raw ?? '';
+    const dec = d?.declining ?? false;
+    return `
+      <div class="update-form" id="form-${key}">
+        <div class="form-field">
+          <label class="form-lbl">Average cancellation rate — DHI + LEN + PHM (%)</label>
+          <input type="number" class="form-input" id="inp-cxrate" min="0" max="50" step="0.1" value="${raw}" placeholder="e.g. 13.7">
+        </div>
+        <div class="form-field">
+          <label class="check-row">
+            <input type="checkbox" id="inp-declining" ${dec ? 'checked' : ''}>
+            <span class="check-lbl">Trend declining vs prior quarter</span>
+          </label>
+        </div>
+        <div class="form-actions">
+          <button class="btn btn-save" onclick="saveManual('${key}')">Save</button>
+          <button class="btn btn-cancel" onclick="toggleForm('${key}')">Cancel</button>
+        </div>
+      </div>`;
+  }
+  if (key === 'osb') {
+    const raw = d?.raw ?? '';
+    return `
+      <div class="update-form" id="form-${key}">
+        <div class="form-field">
+          <label class="form-lbl">Current OSB price ($/MSF)</label>
+          <input type="number" class="form-input" id="inp-osb" min="0" max="2000" step="1" value="${raw}" placeholder="e.g. 225">
+        </div>
+        <div class="form-actions">
+          <button class="btn btn-save" onclick="saveManual('${key}')">Save</button>
+          <button class="btn btn-cancel" onclick="toggleForm('${key}')">Cancel</button>
+        </div>
+      </div>`;
+  }
+  return '';
+}
+
+function toggleForm(key) {
+  const form = document.getElementById('form-' + key);
+  const btn  = document.getElementById('ubtn-' + key);
+  if (!form) return;
+  const open = form.style.display === 'block';
+  form.style.display = open ? 'none' : 'block';
+  if (btn) btn.classList.toggle('open', !open);
+}
+
+async function saveManual(key) {
+  let body = { signal: key };
+  if (key === 'fedDirection') {
+    body.cuts = parseInt(document.getElementById('inp-cuts').value) || 0;
+    body.firstCutDelivered = document.getElementById('inp-delivered').checked;
+  } else if (key === 'cancellations') {
+    body.raw = parseFloat(document.getElementById('inp-cxrate').value);
+    body.declining = document.getElementById('inp-declining').checked;
+  } else if (key === 'osb') {
+    body.raw = parseFloat(document.getElementById('inp-osb').value);
+  }
+  toast('Saving...');
+  try {
+    const r = await fetch('/.netlify/functions/save-manual', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-refresh-token': TOKEN },
+      body: JSON.stringify(body),
+    });
+    if (r.status === 401) { toast('Unauthorized — check token'); return; }
+    snap = await r.json();
+    render();
+    toggleForm(key);
+    toast('Saved');
+  } catch { toast('Save failed'); }
+}
+
+// ─── Tripwires ────────────────────────────────────────────────────────────────
+function renderTripwires() {
+  const tw = snap?.tripwires || {};
+  const d  = snap?.data || {};
+
+  const rows = [
+    {
+      title:  '30yr rate rises above 6.75% sustained',
+      action: 'Reduce all positions 25% · pause tranche deployment',
+      dot:    tw.mortgageHigh ? 'firing' : (d.mortgage?.raw != null ? 'clear' : ''),
+      status: d.mortgage?.raw != null
+        ? (tw.mortgageHigh
+          ? `Firing — ${d.mortgage.raw.toFixed(2)}% exceeds 6.75%`
+          : `Clear — currently ${d.mortgage.raw.toFixed(2)}%`)
+        : 'No data',
+      statusCls: tw.mortgageHigh ? 'firing' : 'clear',
+    },
+    {
+      title:  'OSB pricing makes new lows (below $250/MSF)',
+      action: 'Flag for review · deeper cycle than expected',
+      dot:    d.osb?.raw != null ? (tw.osbLow ? 'firing' : 'clear') : '',
+      status: d.osb?.raw != null
+        ? (tw.osbLow
+          ? `Firing — $${Math.round(d.osb.raw)}/MSF below $250 threshold`
+          : `Clear — currently $${Math.round(d.osb.raw)}/MSF`)
+        : 'Enter OSB reading to monitor',
+      statusCls: d.osb?.raw != null ? (tw.osbLow ? 'firing' : 'clear') : '',
+    },
+    {
+      title:  'Cancellations spike above 18% (any major builder)',
+      action: 'Reduce all 15% · demand quality deteriorating',
+      dot:    d.cancellations?.raw != null ? (tw.cancellationsHigh ? 'firing' : 'clear') : '',
+      status: d.cancellations?.raw != null
+        ? (tw.cancellationsHigh
+          ? `Firing — avg ${d.cancellations.raw.toFixed(1)}% exceeds 18%`
+          : `Clear — avg ${d.cancellations.raw.toFixed(1)}%`)
+        : 'Enter cancellation rate to monitor',
+      statusCls: d.cancellations?.raw != null ? (tw.cancellationsHigh ? 'firing' : 'clear') : '',
+    },
+    {
+      title:  'Housing starts fall below 1.2M annualized',
+      action: 'Reduce DHI 25% · revisit thesis',
+      dot:    '',
+      status: 'Manual — check Census Bureau monthly release',
+      statusCls: '',
+    },
+    {
+      title:  'Q2 2026 builder guidance cut 10%+',
+      action: 'Reduce all 25% · earnings floor not established',
+      dot:    '',
+      status: 'Manual — monitor after Q2 earnings from DHI, LEN, PHM',
+      statusCls: '',
+    },
+  ];
+
+  document.getElementById('el-tw-body').innerHTML = rows.map(r => `
+    <div class="tw-row">
+      <div class="tw-dot ${r.dot}"></div>
+      <div>
+        <div class="tw-main-text">${r.title}</div>
+        <div class="tw-status ${r.statusCls}">${r.status}</div>
+      </div>
+      <div class="tw-action">${r.action}</div>
+    </div>
+  `).join('');
+}
+
+function toggleTW() {
+  const body = document.getElementById('el-tw-body');
+  const chev = document.getElementById('el-chevron');
+  twOpen = !twOpen;
+  body.classList.toggle('hidden', !twOpen);
+  chev.classList.toggle('closed', !twOpen);
+}
+
+// ─── History ──────────────────────────────────────────────────────────────────
+function renderHistory() {
+  const el = document.getElementById('el-history');
+  if (!hist.length) {
+    el.innerHTML = `<div class="history-empty">No score changes recorded yet.<br>History logs each time the total score moves.</div>`;
+    return;
+  }
+  el.innerHTML = hist.map(entry => {
+    const ts    = new Date(entry.ts);
+    const date  = ts.toLocaleDateString('en-US', { month:'long', day:'numeric', year:'numeric' });
+    const delta = (entry.newScore ?? 0) - (entry.prevScore ?? 0);
+    const dCls  = delta > 0 ? 'pos' : 'neg';
+    const dSign = delta > 0 ? '+' : '';
+    const rows  = (entry.changes || []).map(ch => {
+      const sd    = (ch.newScore ?? 0) - (ch.prevScore ?? 0);
+      const sdCls = sd > 0 ? 'pos' : 'neg';
+      const sdS   = sd > 0 ? '+' : '';
+      return `
+        <div class="hist-row">
+          <span class="hist-sig">${SIG_LABELS[ch.key] || ch.key}</span>
+          <span class="hist-pts">
+            ${ch.prevScore ?? '—'} → <span class="new ${sdCls}">${ch.newScore ?? '—'} (${sdS}${sd})</span>
+          </span>
+        </div>`;
+    }).join('');
+    return `
+      <div class="hist-entry">
+        <div class="hist-hd">
+          <span class="hist-date">${date}</span>
+          <div class="hist-delta">
+            <span class="hist-score">${entry.prevScore}/14</span>
+            <span class="hist-arrow">→</span>
+            <span class="hist-score">${entry.newScore}/14</span>
+            <span class="hist-change ${dCls}">${dSign}${delta}</span>
+          </div>
+        </div>
+        ${rows ? `<div class="hist-rows">${rows}</div>` : ''}
+      </div>`;
+  }).join('');
+}
+
+// ─── Refresh ──────────────────────────────────────────────────────────────────
+async function onRefresh() {
+  const btn = document.getElementById('btn-refresh');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spin"></span>Refreshing';
+
+  try {
+    const auth = await fetch('/.netlify/functions/validate-token', { headers: { 'x-refresh-token': TOKEN } });
+    if (auth.status === 401) {
+      localStorage.removeItem('hb_token');
+      toast('Invalid token — reload to re-enter');
+      btn.disabled = false; btn.textContent = 'Refresh Data';
+      return;
+    }
+
+    await fetch('/.netlify/functions/refresh-background', { headers: { 'x-refresh-token': TOKEN } });
+    toast('Refresh in progress...');
+
+    const prevTs = snap?.lastUpdated;
+    let attempts = 0;
+    const poll = setInterval(async () => {
+      attempts++;
+      try {
+        const r = await fetch('/.netlify/functions/get-data', { headers: { 'Cache-Control': 'no-store' } });
+        const j = await r.json();
+        if (j.snapshot?.lastUpdated && j.snapshot.lastUpdated !== prevTs) {
+          clearInterval(poll);
+          snap = j.snapshot; hist = j.history || [];
+          render();
+          btn.disabled = false; btn.textContent = 'Refresh Data';
+          toast('Data updated');
+        }
+      } catch {}
+      if (attempts >= 25) {
+        clearInterval(poll);
+        btn.disabled = false; btn.textContent = 'Refresh Data';
+        toast('Refresh timed out');
+      }
+    }, 4000);
+  } catch {
+    btn.disabled = false; btn.textContent = 'Refresh Data';
+    toast('Refresh failed');
+  }
+}
+
+// ─── Tabs ─────────────────────────────────────────────────────────────────────
+function switchTab(tab) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
+  document.getElementById('view-scorecard').style.display = tab === 'scorecard' ? '' : 'none';
+  document.getElementById('view-history').style.display   = tab === 'history'   ? '' : 'none';
+}
+
+// ─── Toast ────────────────────────────────────────────────────────────────────
+let toastTimer;
+function toast(msg) {
+  const el = document.getElementById('el-toast');
+  el.textContent = msg;
+  el.classList.remove('gone');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.add('gone'), 3200);
+}
+</script>
+</body>
+</html>
