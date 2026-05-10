@@ -2,11 +2,10 @@ const { getStore } = require('@netlify/blobs');
 
 // ─── Scoring ──────────────────────────────────────────────────────────────────
 
-function scoreMortgage(raw, prevRaw) {
+function scoreMortgage(raw) {
   if (raw >= 6.75) return 0;
   if (raw < 6.0) return 2;
-  const falling = prevRaw != null && raw < prevRaw;
-  return falling ? 1 : 0;
+  return 1;
 }
 
 function scoreFed(cuts, firstCutDelivered) {
@@ -21,12 +20,9 @@ function scoreMBA(raw) {
   return 0;
 }
 
-function scoreNAHB(raw, prevRaw) {
+function scoreNAHB(raw) {
   if (raw >= 35) return 2;
-  if (raw >= 20) {
-    const rising = prevRaw != null && prevRaw !== raw && raw > prevRaw;
-    return rising ? 1 : 0;
-  }
+  if (raw >= 20) return 1;
   return 0;
 }
 
@@ -85,12 +81,6 @@ const AUTO_SIGNALS = [
     defaultUrl: 'https://www.nahb.org/news-and-economics/housing-economics/indices/housing-market-index',
     prompt: 'This page shows the NAHB/Wells Fargo Housing Market Index. Find the "Traffic of prospective buyers" sub-index value specifically — not the headline HMI number and not current sales. It will be a small number like 22 or 35. Return ONLY that number — no other text.',
     validate: (n) => n > 0 && n < 100,
-  },
-  {
-    key: 'itbPB',
-    defaultUrl: 'https://www.ishares.com/us/products/239512/ishares-us-home-construction-etf',
-    prompt: 'This page shows the iShares U.S. Home Construction ETF (ITB). Find the P/B Ratio listed under Portfolio Characteristics. It will be a number like 1.93 or 2.10. Return ONLY the number — no x suffix, no other text.',
-    validate: (n) => n > 0.3 && n < 15,
   },
 ];
 
@@ -181,10 +171,9 @@ exports.handler = async (event) => {
   });
 
   // Compute auto signal scores
-  if (data.mortgage?.raw != null) data.mortgage.score = scoreMortgage(data.mortgage.raw, data.mortgage.prevRaw);
+  if (data.mortgage?.raw != null) data.mortgage.score = scoreMortgage(data.mortgage.raw);
   if (data.mba?.raw != null)      data.mba.score      = scoreMBA(data.mba.raw);
-  if (data.nahb?.raw != null)     data.nahb.score     = scoreNAHB(data.nahb.raw, data.nahb.prevRaw);
-  if (data.itbPB?.raw != null)    data.itbPB.score    = scoreITBPB(data.itbPB.raw);
+  if (data.nahb?.raw != null)     data.nahb.score     = scoreNAHB(data.nahb.raw);
 
   // Re-score manual signals from stored values (in case scoring rules changed)
   if (!data.fedDirection) data.fedDirection = { cuts: 0, firstCutDelivered: false, score: 0, manual: true };
@@ -192,6 +181,9 @@ exports.handler = async (event) => {
 
   if (!data.cancellations) data.cancellations = { raw: null, declining: false, score: 0, manual: true };
   else data.cancellations.score = scoreCancellations(data.cancellations.raw, data.cancellations.declining);
+
+  if (!data.itbPB) data.itbPB = { raw: null, score: 0, manual: true };
+  else data.itbPB.score = scoreITBPB(data.itbPB.raw ?? null);
 
   if (!data.osb) data.osb = { raw: null, prevRaw: null, score: 0, manual: true };
   else data.osb.score = scoreOSB(data.osb.raw);

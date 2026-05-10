@@ -13,6 +13,13 @@ function scoreCancellations(raw, declining) {
   return 1;
 }
 
+function scoreITBPB(raw) {
+  if (raw == null) return 0;
+  if (raw <= 1.0) return 2;
+  if (raw <= 1.5) return 1;
+  return 0;
+}
+
 function scoreOSB(raw) {
   if (raw == null) return 0;
   if (raw > 400) return 2;
@@ -40,7 +47,7 @@ exports.handler = async (event) => {
   }
 
   const { signal } = body;
-  if (!['fedDirection', 'cancellations', 'osb'].includes(signal)) {
+  if (!['fedDirection', 'cancellations', 'itbPB', 'osb'].includes(signal)) {
     return { statusCode: 400, body: 'Unknown signal' };
   }
 
@@ -58,6 +65,9 @@ exports.handler = async (event) => {
     const raw = parseFloat(body.raw);
     const declining = !!body.declining;
     data.cancellations = { raw, declining, score: scoreCancellations(raw, declining), lastUpdated: now, manual: true };
+  } else if (signal === 'itbPB') {
+    const raw = parseFloat(body.raw);
+    data.itbPB = { raw, score: scoreITBPB(isNaN(raw) ? null : raw), lastUpdated: now, manual: true };
   } else if (signal === 'osb') {
     const raw = parseFloat(body.raw);
     const prevRaw = existing.data?.osb?.raw ?? null;

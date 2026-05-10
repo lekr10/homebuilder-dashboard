@@ -199,31 +199,111 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 36px 0 44px;
-      gap: 28px;
+      padding: 32px 0 44px;
+      gap: 24px;
+    }
+
+    .hero-score-row {
+      display: flex;
+      align-items: center;
+      gap: 20px;
     }
 
     .score-display {
       display: flex;
       align-items: baseline;
-      gap: 6px;
+      gap: 5px;
+      flex-shrink: 0;
     }
 
     .score-num {
-      font-size: 96px;
+      font-size: 56px;
       font-weight: 800;
       line-height: 1;
       color: var(--text-1);
       font-variant-numeric: tabular-nums;
-      letter-spacing: -0.045em;
+      letter-spacing: -0.04em;
     }
 
     .score-denom {
-      font-size: 26px;
+      font-size: 20px;
       font-weight: 400;
       color: var(--text-4);
       letter-spacing: -0.02em;
-      padding-bottom: 8px;
+      padding-bottom: 4px;
+    }
+
+    .hero-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      max-width: 340px;
+    }
+
+    .score-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-1);
+      letter-spacing: -0.01em;
+    }
+
+    .score-desc {
+      font-size: 11.5px;
+      color: var(--text-3);
+      line-height: 1.5;
+    }
+
+    /* ── Category tiles ─────────────────────────────────── */
+    .cat-row {
+      display: flex;
+      gap: 10px;
+      width: 100%;
+      max-width: 580px;
+    }
+
+    .cat-tile {
+      flex: 1;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 12px 14px 11px;
+    }
+
+    .cat-label {
+      font-size: 9px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-3);
+      margin-bottom: 6px;
+    }
+
+    .cat-score-val {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--text-1);
+      line-height: 1;
+      margin-bottom: 9px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .cat-max {
+      font-size: 13px;
+      font-weight: 400;
+      color: var(--text-4);
+    }
+
+    .cat-mini-track {
+      height: 3px;
+      background: var(--surface-3);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .cat-mini-fill {
+      height: 100%;
+      border-radius: 2px;
+      transition: width 0.7s cubic-bezier(0.4,0,0.2,1);
     }
 
     /* ── Progress bar ───────────────────────────────────── */
@@ -456,6 +536,14 @@
     .dir-good { color: var(--green); }
     .dir-bad  { color: var(--red); }
 
+    /* Context sentence */
+    .card-ctx {
+      font-size: 11px;
+      color: var(--text-3);
+      line-height: 1.55;
+      margin-bottom: 10px;
+    }
+
     /* Next threshold */
     .card-next {
       font-size: 11px;
@@ -497,8 +585,26 @@
 
     .card-meta { font-size: 10px; color: var(--text-4); }
 
-    .update-btn {
+    .card-ft-right {
       margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .sig-link {
+      font-size: 10px;
+      font-weight: 500;
+      color: var(--blue);
+      text-decoration: none;
+      letter-spacing: 0.02em;
+      white-space: nowrap;
+      opacity: 0.8;
+    }
+
+    .sig-link:hover { opacity: 1; text-decoration: underline; }
+
+    .update-btn {
       font-family: inherit;
       font-size: 10px;
       font-weight: 500;
@@ -787,10 +893,18 @@
     <div id="view-scorecard">
 
       <section class="hero">
-        <div class="score-display">
-          <span class="score-num" id="el-score">—</span>
-          <span class="score-denom">/14</span>
+        <div class="hero-score-row">
+          <div class="score-display">
+            <span class="score-num" id="el-score">—</span>
+            <span class="score-denom">/14</span>
+          </div>
+          <div class="hero-meta">
+            <div class="score-title">Homebuilder Entry Scorecard</div>
+            <div class="score-desc">7 macro signals scored 0–2 each. Deploy capital by tranche at 7, 10, and 12 pts. Each signal is independent — no single reading is decisive.</div>
+          </div>
         </div>
+
+        <div class="cat-row" id="el-cats"></div>
 
         <div class="progress-wrap">
           <div class="progress-track" id="el-track">
@@ -851,20 +965,41 @@ const SIGS = {
   mba:           { label: 'MBA Purchase Index',     unit: '',    prefix: '',  cadence: 'Weekly · Wed',  auto: true  },
   nahb:          { label: 'NAHB Buyer Traffic',     unit: '',    prefix: '',  cadence: 'Monthly',       auto: true  },
   cancellations: { label: 'Avg Cancellation Rate',  unit: '%',   prefix: '',  cadence: 'Quarterly',     auto: false },
-  itbPB:         { label: 'ITB P/B Ratio',          unit: 'x',   prefix: '',  cadence: 'Weekly',        auto: true  },
+  itbPB:         { label: 'ITB P/B Ratio',          unit: 'x',   prefix: '',  cadence: 'Check weekly',  auto: false },
   osb:           { label: 'OSB Pricing',            unit: '/MSF',prefix: '$', cadence: 'Quarterly',     auto: false },
+};
+
+const CTX = {
+  mortgage:      'The 30-year fixed rate is the primary affordability lever — lower rates expand the buyer pool and support new home pricing.',
+  fedDirection:  'Builder stocks historically lead the Fed easing cycle by 6–12 months. The market begins pricing in cuts before any move is delivered.',
+  mba:           'The MBA Purchase Index measures weekly mortgage application volume from prospective buyers — the most real-time demand read available.',
+  nahb:          'The Buyer Traffic sub-index captures how many shoppers are actively visiting model homes right now, independent of sales conversion.',
+  cancellations: 'Cancellation rates reveal true demand quality beneath gross orders — elevated rates signal buyers backing out on affordability or job concerns.',
+  itbPB:         'The ITB price-to-book ratio tracks sector valuation. Below 1.5× suggests the market has not yet re-rated homebuilders for a recovery.',
+  osb:           'Oriented strand board pricing is a leading indicator of construction input costs — rising OSB compresses builder margins in subsequent quarters.',
+};
+
+const LINKS = {
+  fedDirection: { href: 'https://www.cmegroup.com/markets/interest-rates/cme-fedwatch-tool.html', label: 'CME FedWatch ↗' },
+  itbPB:        { href: 'https://www.ishares.com/us/products/239512/ishares-us-home-construction-etf', label: 'iShares ITB ↗' },
 };
 
 const ORDER = ['mortgage','fedDirection','mba','nahb','cancellations','itbPB','osb'];
 
+const CATS = [
+  { label: 'Rate Environment', keys: ['mortgage','fedDirection','mba'], max: 6 },
+  { label: 'Demand Health',    keys: ['nahb','cancellations'],          max: 4 },
+  { label: 'Valuation & Cost', keys: ['itbPB','osb'],                  max: 4 },
+];
+
 const NEXT = {
-  mortgage:      { 1: 'Rate 6.0–6.74% and falling', 2: 'Rate sustained below 6.0%' },
+  mortgage:      { 1: 'Rate between 6.0–6.74%', 2: 'Rate sustained below 6.0%' },
   fedDirection:  { 1: '1–2 cuts priced in next 12 months', 2: 'First cut delivered or 3+ cuts priced' },
   mba:           { 1: 'Index ≥ 145', 2: 'Index ≥ 200' },
-  nahb:          { 1: 'Traffic ≥ 20 and rising month-over-month', 2: 'Traffic ≥ 35' },
+  nahb:          { 1: 'Traffic ≥ 20', 2: 'Traffic ≥ 35' },
   cancellations: { 1: '13–18% and declining', 2: '≤ 12% and declining' },
   itbPB:         { 1: 'P/B ≤ 1.5×', 2: 'P/B ≤ 1.0×' },
-  osb:           { 1: '$300–400/MSF and flattening', 2: 'Above $400/MSF or +20% from trough' },
+  osb:           { 1: '$300–400/MSF', 2: 'Above $400/MSF or +20% from trough' },
 };
 
 const ACTION_STYLE = {
@@ -908,6 +1043,7 @@ async function load() {
 
 function render() {
   renderHero();
+  renderCats();
   renderSignals();
   renderTripwires();
   renderHistory();
@@ -956,6 +1092,22 @@ function renderHero() {
   document.getElementById('el-action-desc').textContent = desc;
 }
 
+// ─── Category tiles ───────────────────────────────────────────────────────────
+function renderCats() {
+  const el = document.getElementById('el-cats');
+  el.innerHTML = CATS.map(cat => {
+    const pts = cat.keys.reduce((s, k) => s + (snap?.data?.[k]?.score ?? 0), 0);
+    const pct = snap ? (pts / cat.max) * 100 : 0;
+    const color = pct >= 67 ? 'var(--green)' : pct >= 34 ? 'var(--amber)' : 'var(--text-4)';
+    return `
+      <div class="cat-tile">
+        <div class="cat-label">${cat.label}</div>
+        <div class="cat-score-val">${snap ? pts : '—'}<span class="cat-max">/${cat.max}</span></div>
+        <div class="cat-mini-track"><div class="cat-mini-fill" style="width:${pct}%;background:${color}"></div></div>
+      </div>`;
+  }).join('');
+}
+
 // ─── Signals ──────────────────────────────────────────────────────────────────
 function renderSignals() {
   const grid = document.getElementById('el-signals');
@@ -974,6 +1126,12 @@ function renderSignals() {
     card.className = `sig-card s${sc} fade-in`;
     card.dataset.k = key;
 
+    const link = LINKS[key];
+    const ftRight = [
+      link ? `<a class="sig-link" href="${link.href}" target="_blank" rel="noopener">${link.label}</a>` : '',
+      !meta.auto ? `<button class="update-btn" id="ubtn-${key}" onclick="toggleForm('${key}')">Update</button>` : '',
+    ].filter(Boolean).join('');
+
     card.innerHTML = `
       <div class="card-body">
         <div class="card-hd">
@@ -988,12 +1146,13 @@ function renderSignals() {
           ${meta.unit ? `<span class="val-unit">${meta.unit}</span>` : ''}
         </div>
         <div class="card-dir ${dirCls}">${dir}&nbsp;</div>
+        <div class="card-ctx">${CTX[key]}</div>
         <div class="card-next ${sc === 2 ? 'maxed' : ''}">${next}</div>
         <div class="card-ft">
           <span class="tag ${meta.auto ? 'tag-auto' : 'tag-manual'}">${meta.auto ? 'Auto' : 'Manual'}</span>
           <span class="card-meta">${meta.cadence}</span>
           <span class="card-meta">· ${upd}</span>
-          ${!meta.auto ? `<button class="update-btn" id="ubtn-${key}" onclick="toggleForm('${key}')">Update</button>` : ''}
+          ${ftRight ? `<div class="card-ft-right">${ftRight}</div>` : ''}
         </div>
       </div>
       ${!meta.auto ? manualForm(key, d) : ''}
@@ -1104,6 +1263,20 @@ function manualForm(key, d) {
         </div>
       </div>`;
   }
+  if (key === 'itbPB') {
+    const raw = d?.raw ?? '';
+    return `
+      <div class="update-form" id="form-${key}">
+        <div class="form-field">
+          <label class="form-lbl">ITB P/B ratio — from iShares Portfolio Characteristics</label>
+          <input type="number" class="form-input" id="inp-itbpb" min="0" max="20" step="0.01" value="${raw}" placeholder="e.g. 1.93">
+        </div>
+        <div class="form-actions">
+          <button class="btn btn-save" onclick="saveManual('${key}')">Save</button>
+          <button class="btn btn-cancel" onclick="toggleForm('${key}')">Cancel</button>
+        </div>
+      </div>`;
+  }
   if (key === 'osb') {
     const raw = d?.raw ?? '';
     return `
@@ -1138,6 +1311,8 @@ async function saveManual(key) {
   } else if (key === 'cancellations') {
     body.raw = parseFloat(document.getElementById('inp-cxrate').value);
     body.declining = document.getElementById('inp-declining').checked;
+  } else if (key === 'itbPB') {
+    body.raw = parseFloat(document.getElementById('inp-itbpb').value);
   } else if (key === 'osb') {
     body.raw = parseFloat(document.getElementById('inp-osb').value);
   }
