@@ -844,10 +844,14 @@
 
 <script>
 // ─── Token ────────────────────────────────────────────────────────────────────
-let TOKEN = localStorage.getItem('hb_token');
-if (!TOKEN) {
-  TOKEN = prompt('Refresh token:');
-  if (TOKEN) localStorage.setItem('hb_token', TOKEN);
+let TOKEN = localStorage.getItem('hb_token') || null;
+
+function ensureToken() {
+  if (!TOKEN) {
+    TOKEN = prompt('Enter refresh token:');
+    if (TOKEN) localStorage.setItem('hb_token', TOKEN);
+  }
+  return !!TOKEN;
 }
 
 // ─── Signal definitions ───────────────────────────────────────────────────────
@@ -1137,6 +1141,7 @@ function toggleForm(key) {
 }
 
 async function saveManual(key) {
+  if (!ensureToken()) return;
   let body = { signal: key };
   if (key === 'fedDirection') {
     body.cuts = parseInt(document.getElementById('inp-cuts').value) || 0;
@@ -1280,6 +1285,7 @@ function renderHistory() {
 
 // ─── Refresh ──────────────────────────────────────────────────────────────────
 async function onRefresh() {
+  if (!ensureToken()) return;
   const btn = document.getElementById('btn-refresh');
   btn.disabled = true;
   btn.innerHTML = '<span class="spin"></span>Refreshing';
