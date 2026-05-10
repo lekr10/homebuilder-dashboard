@@ -1,5 +1,8 @@
 {
   "name": "homebuilder-dashboard",
   "version": "1.0.0",
-  "private": true
+  "private": true,
+  "dependencies": {
+    "@netlify/blobs": "^8.1.0"
+  }
 }
