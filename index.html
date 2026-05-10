@@ -1055,10 +1055,10 @@ const NEXT = {
 };
 
 const TRANCHES = [
-  { tranche: 0, zone: 'Hold',      range: '0 – 6',   pts: '0%',    deploy: '0%',    color: 'var(--red)',   action: 'Wait for signal confirmation', names: '—',             threshold: 7  },
-  { tranche: 1, zone: 'Tranche 1', range: '7 – 9',   pts: '40%',   deploy: '40%',   color: 'var(--amber)', action: 'Deploy 40% of allocation',     names: 'TOL + PHM',     threshold: 10 },
-  { tranche: 2, zone: 'Tranche 2', range: '10 – 11', pts: '+40%',  deploy: '+40%',  color: 'var(--lime)',  action: 'Add as recovery broadens',     names: '+ DHI + LEN',   threshold: 12 },
-  { tranche: 3, zone: 'Tranche 3', range: '12 – 14', pts: '+20%',  deploy: '+20%',  color: 'var(--green)', action: 'Deploy final tranche',         names: 'Full position',  threshold: null },
+  { tranche: 0, zone: 'Hold',      range: '0 – 6',   deploy: '0%',   color: 'var(--red)',   action: 'Wait for signal confirmation', threshold: 7  },
+  { tranche: 1, zone: 'Tranche 1', range: '7 – 9',   deploy: '40%',  color: 'var(--amber)', action: 'Deploy 40% of allocation',     threshold: 10 },
+  { tranche: 2, zone: 'Tranche 2', range: '10 – 11', deploy: '+40%', color: 'var(--lime)',  action: 'Add as recovery broadens',     threshold: 12 },
+  { tranche: 3, zone: 'Tranche 3', range: '12 – 14', deploy: '+20%', color: 'var(--green)', action: 'Deploy final tranche',         threshold: null },
 ];
 
 const SIG_LABELS = {
@@ -1142,7 +1142,6 @@ function renderTranche() {
         <div class="tr-range">${t.range} <span class="tr-unit">pts</span></div>
         <div class="tr-deploy" style="color:${deployColor}">${t.deploy}</div>
         <div class="tr-action-text">${t.action}</div>
-        <div class="tr-names">${t.names}</div>
         ${needText ? `<div class="tr-need">${needText}</div>` : ''}
       </div>`;
   }).join('');
