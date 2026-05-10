@@ -1,6 +1,3 @@
-exports.handler = async (event) => {
-  if (event.headers['x-refresh-token'] !== process.env.REFRESH_TOKEN) {
-    return { statusCode: 401 };
-  }
+exports.handler = async () => {
   return { statusCode: 200 };
 };

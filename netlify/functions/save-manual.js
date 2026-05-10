@@ -31,9 +31,6 @@ const KEYS = ['mortgage', 'fedDirection', 'mba', 'nahb', 'cancellations', 'itbPB
 
 exports.handler = async (event) => {
   if (event.httpMethod !== 'POST') return { statusCode: 405 };
-  if (event.headers['x-refresh-token'] !== process.env.REFRESH_TOKEN) {
-    return { statusCode: 401, body: 'Unauthorized' };
-  }
 
   let body;
   try {

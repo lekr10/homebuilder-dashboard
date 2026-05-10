@@ -129,11 +129,6 @@ async function extractWithHaiku(prompt, pageText, apiKey) {
 // ─── Handler ──────────────────────────────────────────────────────────────────
 
 exports.handler = async (event) => {
-  if (event.headers['x-refresh-token'] !== process.env.REFRESH_TOKEN) {
-    console.log('Auth failed');
-    return { statusCode: 401 };
-  }
-
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) return { statusCode: 500 };
 

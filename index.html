@@ -843,16 +843,6 @@
 <div class="toast gone" id="el-toast"></div>
 
 <script>
-// ─── Token ────────────────────────────────────────────────────────────────────
-let TOKEN = localStorage.getItem('hb_token') || null;
-
-function ensureToken() {
-  if (!TOKEN) {
-    TOKEN = prompt('Enter refresh token:');
-    if (TOKEN) localStorage.setItem('hb_token', TOKEN);
-  }
-  return !!TOKEN;
-}
 
 // ─── Signal definitions ───────────────────────────────────────────────────────
 const SIGS = {
@@ -1141,7 +1131,6 @@ function toggleForm(key) {
 }
 
 async function saveManual(key) {
-  if (!ensureToken()) return;
   let body = { signal: key };
   if (key === 'fedDirection') {
     body.cuts = parseInt(document.getElementById('inp-cuts').value) || 0;
@@ -1156,10 +1145,9 @@ async function saveManual(key) {
   try {
     const r = await fetch('/.netlify/functions/save-manual', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'x-refresh-token': TOKEN },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body),
     });
-    if (r.status === 401) { toast('Unauthorized — check token'); return; }
     snap = await r.json();
     render();
     toggleForm(key);
@@ -1285,21 +1273,12 @@ function renderHistory() {
 
 // ─── Refresh ──────────────────────────────────────────────────────────────────
 async function onRefresh() {
-  if (!ensureToken()) return;
   const btn = document.getElementById('btn-refresh');
   btn.disabled = true;
   btn.innerHTML = '<span class="spin"></span>Refreshing';
 
   try {
-    const auth = await fetch('/.netlify/functions/validate-token', { headers: { 'x-refresh-token': TOKEN } });
-    if (auth.status === 401) {
-      localStorage.removeItem('hb_token');
-      toast('Invalid token — reload to re-enter');
-      btn.disabled = false; btn.textContent = 'Refresh Data';
-      return;
-    }
-
-    await fetch('/.netlify/functions/refresh-background', { headers: { 'x-refresh-token': TOKEN } });
+    await fetch('/.netlify/functions/refresh-background');
     toast('Refresh in progress...');
 
     const prevTs = snap?.lastUpdated;
