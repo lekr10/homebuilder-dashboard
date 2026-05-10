@@ -314,9 +314,16 @@
 
     .progress-track {
       position: relative;
-      height: 5px;
+      height: 8px;
       background: var(--surface-3);
-      border-radius: 3px;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .zone-bg {
+      position: absolute;
+      top: 0; bottom: 0;
+      pointer-events: none;
     }
 
     .progress-fill {
@@ -324,22 +331,24 @@
       inset: 0;
       right: auto;
       width: 0;
-      border-radius: 3px;
+      border-radius: 4px;
       transition: width 0.7s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.4s;
+      z-index: 1;
     }
 
     .tick {
       position: absolute;
-      top: -5px;
+      top: -4px;
       width: 1px;
-      height: 15px;
-      background: var(--border-2);
+      height: 16px;
+      background: var(--surface);
       transform: translateX(-50%);
+      z-index: 2;
     }
 
     .tick-label {
       position: absolute;
-      top: 16px;
+      top: 18px;
       left: 50%;
       transform: translateX(-50%);
       font-size: 9px;
@@ -352,7 +361,7 @@
     .progress-bookends {
       display: flex;
       justify-content: space-between;
-      margin-top: 28px;
+      margin-top: 26px;
     }
 
     .bookend {
@@ -361,46 +370,83 @@
       letter-spacing: 0.04em;
     }
 
-    /* ── Action banner ──────────────────────────────────── */
-    .action-banner {
+    /* ── Tranche grid ───────────────────────────────────── */
+    .tranche-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
       width: 100%;
       max-width: 580px;
-      border-left: 3px solid var(--red);
-      background: var(--red-dim);
-      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
-      padding: 14px 18px;
     }
 
-    .action-top {
-      display: flex;
-      align-items: center;
-      gap: 10px;
+    .tr-cell {
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      border-right: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      border-left: 3px solid var(--border-2);
+      border-radius: var(--radius);
+      padding: 11px 12px 10px;
+      opacity: 0.45;
+      transition: opacity 0.3s, border-left-color 0.3s;
+    }
+
+    .tr-cell.active { opacity: 1; }
+
+    .tr-zone {
+      font-size: 8.5px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
       margin-bottom: 5px;
     }
 
-    .action-name {
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--red);
+    .tr-range {
+      font-size: 17px;
+      font-weight: 800;
+      color: var(--text-1);
+      font-variant-numeric: tabular-nums;
+      letter-spacing: -0.025em;
+      line-height: 1;
+      margin-bottom: 7px;
     }
 
-    .action-names-pill {
+    .tr-range .tr-unit {
       font-size: 10px;
+      font-weight: 500;
+      color: var(--text-3);
+      letter-spacing: 0;
+    }
+
+    .tr-deploy {
+      font-size: 18px;
+      font-weight: 800;
+      font-variant-numeric: tabular-nums;
+      letter-spacing: -0.02em;
+      line-height: 1;
+      margin-bottom: 5px;
+    }
+
+    .tr-action-text {
+      font-size: 10px;
+      color: var(--text-2);
+      line-height: 1.45;
+      margin-bottom: 4px;
+    }
+
+    .tr-names {
+      font-size: 9.5px;
       font-weight: 600;
       color: var(--text-3);
-      background: var(--surface-3);
-      border: 1px solid var(--border-2);
-      border-radius: 20px;
-      padding: 2px 8px;
-      letter-spacing: 0.03em;
+      letter-spacing: 0.01em;
     }
 
-    .action-desc {
-      font-size: 12px;
-      color: var(--text-2);
-      line-height: 1.55;
+    .tr-need {
+      font-size: 9px;
+      color: var(--text-4);
+      margin-top: 6px;
+      font-variant-numeric: tabular-nums;
+      font-style: italic;
     }
 
     /* ── Section headers ─────────────────────────────────── */
@@ -435,7 +481,9 @@
 
     @media (max-width: 600px) {
       .signals-grid { grid-template-columns: 1fr; }
-      .score-num { font-size: 72px; }
+      .score-num { font-size: 44px; }
+      .tranche-grid { grid-template-columns: repeat(2, 1fr); }
+      .hero-score-row { flex-direction: column; align-items: flex-start; gap: 10px; }
     }
 
     /* ── Signal card ─────────────────────────────────────── */
@@ -908,24 +956,23 @@
 
         <div class="progress-wrap">
           <div class="progress-track" id="el-track">
+            <div class="zone-bg" style="left:0;      width:50%;    background:var(--red-dim)"></div>
+            <div class="zone-bg" style="left:50%;    width:21.43%; background:var(--amber-dim)"></div>
+            <div class="zone-bg" style="left:71.43%; width:14.28%; background:var(--lime-dim)"></div>
+            <div class="zone-bg" style="left:85.71%; width:14.29%; background:var(--green-dim)"></div>
             <div class="progress-fill" id="el-fill"></div>
-            <div class="tick" style="left:50%">   <span class="tick-label">T1 · 7</span></div>
-            <div class="tick" style="left:71.43%"><span class="tick-label">T2 · 10</span></div>
-            <div class="tick" style="left:85.71%"><span class="tick-label">T3 · 12</span></div>
+            <div class="tick" style="left:50%">   <span class="tick-label">7</span></div>
+            <div class="tick" style="left:71.43%"><span class="tick-label">10</span></div>
+            <div class="tick" style="left:85.71%"><span class="tick-label">12</span></div>
           </div>
           <div class="progress-bookends">
-            <span class="bookend">0</span>
+            <span class="bookend">0 — Hold</span>
             <span class="bookend">14</span>
           </div>
         </div>
 
-        <div class="action-banner" id="el-banner">
-          <div class="action-top">
-            <span class="action-name" id="el-action-name">Loading</span>
-            <span class="action-names-pill" id="el-action-names" style="display:none"></span>
-          </div>
-          <div class="action-desc" id="el-action-desc"></div>
-        </div>
+        <div class="tranche-grid" id="el-tranche-grid"></div>
+
       </section>
 
       <div class="signals-wrap">
@@ -1007,12 +1054,12 @@ const NEXT = {
   osb:           { 1: '$300–400/MSF', 2: 'Above $400/MSF or +20% from trough' },
 };
 
-const ACTION_STYLE = {
-  0: { color: 'var(--red)',   bg: 'var(--red-dim)',   border: 'var(--red)',   desc: 'Score below 7 threshold. Leading signals have not confirmed a cycle turn.' },
-  1: { color: 'var(--amber)', bg: 'var(--amber-dim)', border: 'var(--amber)', desc: 'Entry window for Tranche 1. Deploy 40% into highest-conviction names.' },
-  2: { color: 'var(--lime)',  bg: 'var(--lime-dim)',  border: 'var(--lime)',  desc: 'Tranche 2 window — recovery broadening. Add DHI + LEN if Q2 earnings confirm.' },
-  3: { color: 'var(--green)', bg: 'var(--green-dim)', border: 'var(--green)', desc: 'Recovery broadly confirmed. Deploy final 20%. Still ahead of EPS trough.' },
-};
+const TRANCHES = [
+  { tranche: 0, zone: 'Hold',      range: '0 – 6',   pts: '0%',    deploy: '0%',    color: 'var(--red)',   action: 'Wait for signal confirmation', names: '—',             threshold: 7  },
+  { tranche: 1, zone: 'Tranche 1', range: '7 – 9',   pts: '40%',   deploy: '40%',   color: 'var(--amber)', action: 'Deploy 40% of allocation',     names: 'TOL + PHM',     threshold: 10 },
+  { tranche: 2, zone: 'Tranche 2', range: '10 – 11', pts: '+40%',  deploy: '+40%',  color: 'var(--lime)',  action: 'Add as recovery broadens',     names: '+ DHI + LEN',   threshold: 12 },
+  { tranche: 3, zone: 'Tranche 3', range: '12 – 14', pts: '+20%',  deploy: '+20%',  color: 'var(--green)', action: 'Deploy final tranche',         names: 'Full position',  threshold: null },
+];
 
 const SIG_LABELS = {
   mortgage: '30yr Mortgage Rate', fedDirection: 'Fed Direction',
@@ -1049,6 +1096,7 @@ async function load() {
 function render() {
   renderHero();
   renderCats();
+  renderTranche();
   renderSignals();
   renderTripwires();
   renderHistory();
@@ -1062,39 +1110,42 @@ function render() {
 // ─── Hero ─────────────────────────────────────────────────────────────────────
 function renderHero() {
   const score   = snap?.totalScore ?? 0;
-  const tranche = snap?.tranche    ?? 0;
-  const action  = snap?.action     ?? '—';
-  const names   = snap?.names;
-  const cfg     = ACTION_STYLE[tranche];
+  const tranche = snap?.tranche ?? 0;
+  const colors  = ['var(--red)', 'var(--amber)', 'var(--lime)', 'var(--green)'];
 
   document.getElementById('el-score').textContent = snap ? score : '—';
 
-  // Progress fill
-  const pct = snap ? (score / 14) * 100 : 0;
-  const fillColors = { 0: 'var(--text-4)', 1: 'var(--amber)', 2: 'var(--lime)', 3: 'var(--green)' };
+  const pct  = snap ? (score / 14) * 100 : 0;
   const fill = document.getElementById('el-fill');
-  fill.style.width = pct + '%';
-  fill.style.background = fillColors[tranche];
+  fill.style.width      = pct + '%';
+  fill.style.background = colors[tranche];
+}
 
-  // Banner
-  const banner = document.getElementById('el-banner');
-  banner.style.borderLeftColor = cfg.border;
-  banner.style.background      = cfg.bg;
+// ─── Tranche grid ─────────────────────────────────────────────────────────────
+function renderTranche() {
+  const score   = snap?.totalScore ?? 0;
+  const tranche = snap?.tranche ?? 0;
+  const el = document.getElementById('el-tranche-grid');
 
-  const nameEl = document.getElementById('el-action-name');
-  nameEl.textContent = action.toUpperCase();
-  nameEl.style.color = cfg.color;
-
-  const pillEl = document.getElementById('el-action-names');
-  if (names) { pillEl.textContent = names; pillEl.style.display = ''; }
-  else        { pillEl.style.display = 'none'; }
-
-  const nextScore = [7, 10, 12, 14][tranche];
-  const need = Math.max(0, nextScore - score);
-  const trancheNames = ['Tranche 1', 'Tranche 2', 'Tranche 3'];
-  let desc = snap ? cfg.desc : 'Loading signal data...';
-  if (snap && tranche < 3 && need > 0) desc += ` Need +${need} pt${need !== 1 ? 's' : ''} for ${trancheNames[tranche]}.`;
-  document.getElementById('el-action-desc').textContent = desc;
+  el.innerHTML = TRANCHES.map(t => {
+    const isActive = t.tranche === tranche;
+    const need = t.threshold != null ? Math.max(0, t.threshold - score) : 0;
+    const needText = isActive && t.threshold != null && need > 0
+      ? `Need +${need} pt${need !== 1 ? 's' : ''} for T${t.tranche + 1}`
+      : isActive && t.tranche === 3 ? 'Maximum tranche reached'
+      : '';
+    const borderColor = isActive ? t.color : 'var(--border-2)';
+    const deployColor = isActive ? t.color : 'var(--text-3)';
+    return `
+      <div class="tr-cell ${isActive ? 'active' : ''}" style="border-left-color:${borderColor}">
+        <div class="tr-zone" style="color:${isActive ? t.color : 'var(--text-4)'}">${t.zone}</div>
+        <div class="tr-range">${t.range} <span class="tr-unit">pts</span></div>
+        <div class="tr-deploy" style="color:${deployColor}">${t.deploy}</div>
+        <div class="tr-action-text">${t.action}</div>
+        <div class="tr-names">${t.names}</div>
+        ${needText ? `<div class="tr-need">${needText}</div>` : ''}
+      </div>`;
+  }).join('');
 }
 
 // ─── Category tiles ───────────────────────────────────────────────────────────
